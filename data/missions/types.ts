@@ -29,5 +29,6 @@ export interface TrajectoryConfig {
   // Earth is at origin, Moon is at ~[270, 0, 0].
   // Scale: 270 scene units = 238,855 miles (Earth–Moon distance).
   moonDistance: number; // scene units to Moon (for mile conversion)
-  waypoints: [number, number, number][]; // smooth curve through these points
+  waypoints: [number, number, number][]; // free-return curve waypoints
+  heoRadius?: [number, number]; // [semiMajor, semiMinor] of HEO ellipse in scene units
 }

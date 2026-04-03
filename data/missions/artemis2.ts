@@ -26,20 +26,21 @@ export const artemis2: Mission = {
   ],
   trajectory: {
     moonDistance: 270,
-    // CatmullRom waypoints matching the NASA free-return kidney shape.
-    // Moon at [270, 0, 0]. Outbound leg arcs to -Z, return leg arcs to +Z.
-    // Offsets are modest — the two legs stay close (like the NASA diagram),
-    // not a bloated oval. Y gives slight ecliptic inclination for 3D depth.
+    heoRadius: [18, 10], // HEO ellipse: semi-major 18 units, semi-minor 10 units
+    // HEO ellipse rendered separately in Trajectory.tsx.
+    // These waypoints are the free-return figure-8 only (post-TLI).
+    // Legs are close together (narrow shape like NASA diagram).
+    // Z offset ~18 units max — legs nearly parallel, spread only near Moon.
     waypoints: [
-      [  4,   0,   0],   // Earth departure
-      [ 80,   6, -42],   // outbound coast (-Z side)
-      [185,   4, -52],   // mid-outbound
-      [260,   1, -18],   // approaching Moon
-      [272,   0,   4],   // Moon flyby (closest approach)
-      [258,  -1,  20],   // post-flyby
-      [185,  -4,  52],   // mid-return (+Z side)
-      [ 80,  -6,  42],   // return coast
-      [  4,   0,   0],   // splashdown
+      [  5,   0,   0],   // TLI departure
+      [ 60,   0, -35],   // outbound bows hard LEFT (-Z)
+      [160,   0, -38],   // mid-outbound, still left
+      [250,   0, -12],   // converging toward Moon
+      [272,   0,   0],   // Moon flyby apex
+      [250,   0,  12],   // post-flyby, crossing over
+      [160,   0,  38],   // mid-return bows hard RIGHT (+Z)
+      [ 60,   0,  35],   // return leg, right side
+      [  5,   0,   0],   // splashdown — crosses outbound = figure-8
     ],
   },
 };
