@@ -59,7 +59,7 @@ function SceneContent({
       <Sun />
       <Earth onFocus={() => handleFocus(new THREE.Vector3(0, 0, 0))} />
       <Moon onFocus={() => handleFocus(new THREE.Vector3(270, 0, 0))} />
-      <Trajectory mission={mission} progress={progress} />
+      <Trajectory mission={mission} progress={progress} spacecraftPosition={spacecraftPosition} />
       <Spacecraft
         position={spacecraftPosition}
         trailColor={mission.trailColor}

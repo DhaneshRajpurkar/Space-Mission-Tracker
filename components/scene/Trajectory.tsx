@@ -8,6 +8,7 @@ import * as THREE from 'three';
 interface TrajectoryProps {
   mission: Mission;
   progress: number;
+  spacecraftPosition?: THREE.Vector3;
 }
 
 function buildHeoPoints(semiMajor: number, semiMinor: number): THREE.Vector3[] {
@@ -19,7 +20,7 @@ function buildHeoPoints(semiMajor: number, semiMinor: number): THREE.Vector3[] {
   return pts;
 }
 
-export default function Trajectory({ mission, progress }: TrajectoryProps) {
+export default function Trajectory({ mission, progress, spacecraftPosition }: TrajectoryProps) {
   const cfg = mission.trajectory;
 
   // HEO ellipse — purely decorative, static
@@ -31,11 +32,15 @@ export default function Trajectory({ mission, progress }: TrajectoryProps) {
   // Full planned free-return path
   const fullPoints = useMemo(() => buildTrajectory(cfg).getPoints(300), [cfg]);
 
-  // Travelled trail — raw progress, same as spacecraft position
+  // Travelled trail — pin last point to exact spacecraft position to guarantee alignment
   const trailPoints = useMemo(() => {
     if (progress <= 0) return null;
-    return getTrailPoints(cfg, progress, 300);
-  }, [cfg, progress]);
+    const pts = getTrailPoints(cfg, progress, 300);
+    if (spacecraftPosition && pts.length > 0) {
+      pts[pts.length - 1] = spacecraftPosition.clone();
+    }
+    return pts;
+  }, [cfg, progress, spacecraftPosition]);
 
   return (
     <>
