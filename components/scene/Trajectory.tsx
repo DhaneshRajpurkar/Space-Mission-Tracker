@@ -7,22 +7,14 @@ import * as THREE from 'three';
 
 interface TrajectoryProps {
   mission: Mission;
-  progress: number; // 0..1
+  progress: number;
 }
 
-// Mission phase fractions — HEO ends at TLI (dayStart 0.95 / duration 9.5)
-const HEO_END_PROGRESS = 0.95 / 9.5; // ~0.1
-
-function buildHeoPoints(semiMajor: number, semiMinor: number, segments = 120): THREE.Vector3[] {
+function buildHeoPoints(semiMajor: number, semiMinor: number): THREE.Vector3[] {
   const pts: THREE.Vector3[] = [];
-  for (let i = 0; i <= segments; i++) {
-    const angle = (i / segments) * Math.PI * 2;
-    // Ellipse in XZ plane (flat, like an equatorial orbit viewed from above)
-    pts.push(new THREE.Vector3(
-      Math.cos(angle) * semiMajor,
-      0,
-      Math.sin(angle) * semiMinor,
-    ));
+  for (let i = 0; i <= 120; i++) {
+    const a = (i / 120) * Math.PI * 2;
+    pts.push(new THREE.Vector3(Math.cos(a) * semiMajor, 0, Math.sin(a) * semiMinor));
   }
   return pts;
 }
@@ -30,82 +22,34 @@ function buildHeoPoints(semiMajor: number, semiMinor: number, segments = 120): T
 export default function Trajectory({ mission, progress }: TrajectoryProps) {
   const cfg = mission.trajectory;
 
-  // ── HEO ellipse ──
+  // HEO ellipse — purely decorative, static
   const heoPoints = useMemo(() => {
     if (!cfg.heoRadius) return null;
     return buildHeoPoints(cfg.heoRadius[0], cfg.heoRadius[1]);
   }, [cfg.heoRadius]);
 
-  // Progress within HEO phase (0→1 while in HEO)
-  const heoProgress = Math.min(1, progress / HEO_END_PROGRESS);
+  // Full planned free-return path
+  const fullPoints = useMemo(() => buildTrajectory(cfg).getPoints(300), [cfg]);
 
-  // Travelled HEO arc
-  const heoTrailPoints = useMemo(() => {
-    if (!cfg.heoRadius || progress <= 0) return null;
-    const total = buildHeoPoints(cfg.heoRadius[0], cfg.heoRadius[1], 120);
-    // Arc covers heoProgress fraction of the ellipse
-    const count = Math.max(2, Math.floor(total.length * Math.min(1, heoProgress)));
-    return total.slice(0, count);
-  }, [cfg.heoRadius, heoProgress, progress]);
-
-  // ── Free-return trajectory ──
-  const fullPoints = useMemo(() => {
-    const curve = buildTrajectory(cfg);
-    return curve.getPoints(300);
-  }, [cfg]);
-
-  // Travelled trail on free-return (starts after HEO ends)
+  // Travelled trail — raw progress, same as spacecraft position
   const trailPoints = useMemo(() => {
-    if (progress <= HEO_END_PROGRESS) return null;
-    // Remap progress from [HEO_END_PROGRESS..1] → [0..1] for the curve
-    const curveProgress = (progress - HEO_END_PROGRESS) / (1 - HEO_END_PROGRESS);
-    return getTrailPoints(cfg, curveProgress, 300);
+    if (progress <= 0) return null;
+    return getTrailPoints(cfg, progress, 300);
   }, [cfg, progress]);
-
-  const trailColor = mission.trailColor;
 
   return (
     <>
-      {/* ── HEO ellipse — planned (gold, dim) ── */}
+      {/* HEO ellipse — static gold ring around Earth */}
       {heoPoints && (
-        <Line
-          points={heoPoints}
-          color="#8a6a00"
-          lineWidth={1}
-          transparent
-          opacity={0.35}
-        />
+        <Line points={heoPoints} color="#f0c040" lineWidth={1.5} transparent opacity={0.5} />
       )}
 
-      {/* ── HEO ellipse — travelled arc (gold, bright) ── */}
-      {heoTrailPoints && heoTrailPoints.length > 1 && (
-        <Line
-          points={heoTrailPoints}
-          color="#f0c040"
-          lineWidth={2}
-          transparent
-          opacity={0.9}
-        />
-      )}
+      {/* Full planned free-return path */}
+      <Line points={fullPoints} color="#1a4a3a" lineWidth={1} transparent opacity={0.5} />
 
-      {/* ── Free-return — planned path (green, dim) ── */}
-      <Line
-        points={fullPoints}
-        color="#1a4a3a"
-        lineWidth={1}
-        transparent
-        opacity={0.5}
-      />
-
-      {/* ── Free-return — travelled trail (mission color, bright) ── */}
+      {/* Travelled trail */}
       {trailPoints && trailPoints.length > 1 && (
-        <Line
-          points={trailPoints}
-          color={trailColor}
-          lineWidth={2}
-          transparent
-          opacity={0.9}
-        />
+        <Line points={trailPoints} color={mission.trailColor} lineWidth={2} transparent opacity={0.9} />
       )}
     </>
   );
