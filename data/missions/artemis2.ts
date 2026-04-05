@@ -26,7 +26,7 @@ export const artemis2: Mission = {
   ],
   trajectory: {
     moonDistance: 270,
-    heoRadius: [18, 10], // HEO ellipse: semi-major 18 units, semi-minor 10 units
+    heoRadius: [8, 5], // HEO ellipse tight around Earth (radius 3 units)
     // HEO ellipse rendered separately in Trajectory.tsx.
     // These waypoints are the free-return figure-8 only (post-TLI).
     // Legs are close together (narrow shape like NASA diagram).
