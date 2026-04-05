@@ -1,7 +1,7 @@
 'use client';
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, Center } from '@react-three/drei';
 import { Vector3, Group } from 'three';
 
 interface SpacecraftProps {
@@ -23,7 +23,9 @@ export default function Spacecraft({ position, trailColor = '#85b7eb', onFocus }
 
   return (
     <group ref={groupRef} position={position} scale={0.012} onClick={onFocus}>
-      <primitive object={scene.clone()} />
+      <Center>
+        <primitive object={scene.clone()} />
+      </Center>
       <pointLight color={trailColor} intensity={1.2} distance={30} />
     </group>
   );
