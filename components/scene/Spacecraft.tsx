@@ -26,12 +26,12 @@ export default function Spacecraft({ position, trailColor = '#85b7eb', onFocus }
 
   return (
     <group ref={groupRef} position={position} onClick={onFocus}>
-      {/* Glowing beacon — always visible regardless of zoom */}
+      {/* Small position marker */}
       <mesh>
-        <sphereGeometry args={[0.6, 16, 16]} />
-        <meshStandardMaterial color={trailColor} emissive={trailColor} emissiveIntensity={2} />
+        <sphereGeometry args={[0.18, 12, 12]} />
+        <meshStandardMaterial color={trailColor} emissive={trailColor} emissiveIntensity={1} />
       </mesh>
-      <pointLight color={trailColor} intensity={3} distance={60} />
+      <pointLight color={trailColor} intensity={1.5} distance={30} />
 
       {/* 3D capsule model, scaled to fit beacon size */}
       <group scale={0.012}>
