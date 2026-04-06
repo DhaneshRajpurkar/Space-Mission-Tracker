@@ -26,28 +26,41 @@ export const artemis2: Mission = {
   ],
   trajectory: {
     moonDistance: 270,
-    heoRadius: [8, 5],
-    // Free-return figure-8, post-TLI only.
-    // Tangent-guide points near Earth ([20,0,±x]) prevent the loop
-    // artifact at the crossing. Moon flyby is a multi-point arc so the
-    // craft visibly swings around the Moon rather than just touching a
-    // point. Max Z spread ±20 (was ±38) to avoid giant-oval appearance.
+    // No heoRadius — the Earth arc is baked into the waypoints below.
+    //
+    // Shape (top-down view):
+    //   • Waypoints 0-3:  HEO arc — goes BEHIND Earth (neg-X), creating
+    //                     the upper loop with Earth inside it.
+    //   • Waypoints 3-10: figure-8 waist → outbound coast on +Z side.
+    //   • Waypoints 10-15: Moon flyby arc — loops around Moon with Moon
+    //                      inside, going from +Z to -Z.
+    //   • Waypoints 15-22: return coast on -Z side → back to Earth.
+    //   The outbound (+Z) and return (-Z) legs cross each other
+    //   between Earth and Moon (~X=40-60), forming the figure-8 waist.
     waypoints: [
-      [  5,  0,   0],   // TLI departure
-      [ 20,  0,  -5],   // tangent guide — controls Earth-exit angle
-      [ 70,  0, -16],   // outbound coast
-      [150,  0, -20],   // mid-outbound (peak -Z)
-      [220,  0, -13],   // converging on Moon
-      [255,  0,  -7],   // Moon approach
-      [266,  0,  -6],   // pre-flyby — closest pass (~5,300 mi from Moon)
-      [272,  0,  -1],   // flyby apex
-      [272,  0,   5],   // post-flyby, swinging to +Z
-      [258,  0,  10],   // leaving Moon vicinity
-      [210,  0,  17],   // return leg broadening
-      [140,  0,  20],   // mid-return (peak +Z)
-      [ 70,  0,  15],   // return approach
-      [ 20,  0,   4],   // tangent guide — controls Earth-return angle
-      [  5,  0,   0],   // splashdown
+      [  5,  0,   0],  // [0]  launch / HEO start
+      [ -5,  0, -14],  // [1]  arc behind Earth, -Z side
+      [-12,  0,   0],  // [2]  directly behind Earth (Earth loop apex)
+      [ -5,  0,  14],  // [3]  arc behind Earth, +Z side
+      [ 25,  0,  22],  // [4]  sweeping out toward crossing, +Z
+      [ 55,  0,  16],  // [5]  crossing zone (outbound, +Z)
+      [ 90,  0,  20],  // [6]  outbound coast
+      [145,  0,  18],  // [7]
+      [200,  0,  12],  // [8]
+      [240,  0,   7],  // [9]
+      [256,  0,   4],  // [10] approaching Moon
+      [264,  0,   5],  // [11] Moon approach +Z
+      [270,  0,   7],  // [12] Moon flyby +Z (closest on +Z side)
+      [276,  0,   1],  // [13] going around Moon front
+      [271,  0,  -6],  // [14] Moon flyby -Z
+      [257,  0,  -7],  // [15] leaving Moon vicinity
+      [215,  0, -14],  // [16] return coast, -Z side
+      [160,  0, -18],  // [17]
+      [110,  0, -18],  // [18]
+      [ 65,  0, -15],  // [19] crossing zone (return, -Z)
+      [ 28,  0, -10],  // [20] approaching Earth
+      [ 10,  0,  -4],  // [21] near Earth
+      [  5,  0,   0],  // [22] splashdown
     ],
   },
 };
