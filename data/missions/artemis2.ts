@@ -26,21 +26,28 @@ export const artemis2: Mission = {
   ],
   trajectory: {
     moonDistance: 270,
-    heoRadius: [8, 5], // HEO ellipse tight around Earth (radius 3 units)
-    // HEO ellipse rendered separately in Trajectory.tsx.
-    // These waypoints are the free-return figure-8 only (post-TLI).
-    // Legs are close together (narrow shape like NASA diagram).
-    // Z offset ~18 units max — legs nearly parallel, spread only near Moon.
+    heoRadius: [8, 5],
+    // Free-return figure-8, post-TLI only.
+    // Tangent-guide points near Earth ([20,0,±x]) prevent the loop
+    // artifact at the crossing. Moon flyby is a multi-point arc so the
+    // craft visibly swings around the Moon rather than just touching a
+    // point. Max Z spread ±20 (was ±38) to avoid giant-oval appearance.
     waypoints: [
-      [  5,   0,   0],   // TLI departure
-      [ 60,   0, -35],   // outbound bows hard LEFT (-Z)
-      [160,   0, -38],   // mid-outbound, still left
-      [250,   0, -12],   // converging toward Moon
-      [272,   0,   0],   // Moon flyby apex
-      [250,   0,  12],   // post-flyby, crossing over
-      [160,   0,  38],   // mid-return bows hard RIGHT (+Z)
-      [ 60,   0,  35],   // return leg, right side
-      [  5,   0,   0],   // splashdown — crosses outbound = figure-8
+      [  5,  0,   0],   // TLI departure
+      [ 20,  0,  -5],   // tangent guide — controls Earth-exit angle
+      [ 70,  0, -16],   // outbound coast
+      [150,  0, -20],   // mid-outbound (peak -Z)
+      [220,  0, -13],   // converging on Moon
+      [255,  0,  -7],   // Moon approach
+      [266,  0,  -6],   // pre-flyby — closest pass (~5,300 mi from Moon)
+      [272,  0,  -1],   // flyby apex
+      [272,  0,   5],   // post-flyby, swinging to +Z
+      [258,  0,  10],   // leaving Moon vicinity
+      [210,  0,  17],   // return leg broadening
+      [140,  0,  20],   // mid-return (peak +Z)
+      [ 70,  0,  15],   // return approach
+      [ 20,  0,   4],   // tangent guide — controls Earth-return angle
+      [  5,  0,   0],   // splashdown
     ],
   },
 };
